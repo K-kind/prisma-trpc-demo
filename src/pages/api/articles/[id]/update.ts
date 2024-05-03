@@ -15,15 +15,21 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   if (
-    req.method !== "POST" ||
+    req.method !== "PATCH" ||
     req.headers["content-type"] !== "application/json"
   ) {
     return respondError(res, "Invalid request", 422);
   }
+  if (typeof req.query.id !== "string") {
+    return respondError(res, "Invalid id", 422);
+  }
   if (!isValidBody(req.body)) return respondError(res, "Invalid body", 422);
 
-  const article = await prisma.article.create({ data: { ...req.body } });
-  res.status(201).json({ article });
+  const article = await prisma.article.update({
+    where: { id: Number(req.query.id) },
+    data: { ...req.body },
+  });
+  res.status(200).json({ article });
 }
 
 const isValidBody = (body: unknown): body is ArticleCreateParams => {

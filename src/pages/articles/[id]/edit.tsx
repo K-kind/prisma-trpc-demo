@@ -1,23 +1,38 @@
-import { createArticle } from "@/features/articles/api/createArticle";
+import { getArticle } from "@/features/articles/api/getArticle";
+import { updateArticle } from "@/features/articles/api/updateArticle";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { useRouter } from "next/router";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
-export default function ArticleNew() {
+export default function ArticleEdit() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const router = useRouter();
+  const id = useMemo(() => Number(router.query.id), [router.query]);
+
+  const query = useQuery({
+    queryKey: ["articles", id],
+    queryFn: () => getArticle({ id }),
+  });
+  const article = useMemo(() => query.data?.article, [query.data]);
+
+  useEffect(() => {
+    if (article == null) return;
+
+    setTitle(article.title);
+    setContent(article.content);
+  }, [article]);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { article } = await createArticle({ params: { title, content } });
-    router.push(`/articles/${article.id}`);
+    await updateArticle({ id, params: { title, content } });
+    router.push(`/articles/${id}`);
   };
 
   return (
     <div className="p-6 max-w-screen-sm mx-auto">
-      <h1 className="text-xl font-bold">記事作成</h1>
+      <h1 className="text-xl font-bold">記事編集</h1>
 
       <form className="mt-4 max-w-96" onSubmit={onSubmit}>
         <div>
@@ -56,8 +71,8 @@ export default function ArticleNew() {
       </form>
 
       <div className="mt-4">
-        <Link href="/articles">
-          <span className="text-blue-400">一覧に戻る</span>
+        <Link href={`/articles/${id}`}>
+          <span className="text-blue-400">詳細に戻る</span>
         </Link>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
-  articles: Article[];
+  article: Article | null;
 };
 
 export default async function handler(
@@ -12,7 +12,12 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   if (req.method !== "GET") return respondError(res, "Invalid request", 422);
+  if (typeof req.query.id !== "string") {
+    return respondError(res, "Invalid id", 422);
+  }
 
-  const articles = await prisma.article.findMany({ take: 20 });
-  res.status(200).json({ articles });
+  const article = await prisma.article.findFirst({
+    where: { id: Number(req.query.id) },
+  });
+  res.status(200).json({ article });
 }

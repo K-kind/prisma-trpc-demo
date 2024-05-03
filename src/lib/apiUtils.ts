@@ -1,6 +1,6 @@
 import { NextApiResponse } from "next";
 
-export const returnJsonError = (
+export const respondError = (
   res: NextApiResponse,
   message = "Internal server error",
   status = 500
