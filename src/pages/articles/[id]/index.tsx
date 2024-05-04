@@ -1,6 +1,5 @@
 import { destroyArticle } from "@/features/articles/api/destroyArticle";
 import { getArticle } from "@/features/articles/api/getArticle";
-import { getArticleList } from "@/features/articles/api/getArticleList";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -17,7 +16,7 @@ export default function ArticleShow() {
 
   const onClickDestroy = async () => {
     await destroyArticle({ id });
-    router.push("/articles");
+    await router.push("/articles");
   };
 
   return (

@@ -27,7 +27,7 @@ export default function ArticleEdit() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await updateArticle({ id, params: { title, content } });
-    router.push(`/articles/${id}`);
+    await router.push(`/articles/${id}`);
   };
 
   return (

@@ -1,6 +1,14 @@
-import { Article } from "@/features/articles/models/article";
+import {
+  ArticleListQuery,
+  ArticleListResponseData,
+} from "@/pages/api/articles";
+import { getQueryString } from "@/utils/uri";
 
-export const getArticleList = async () => {
-  const res = await fetch("/api/articles");
-  return (await res.json()) as { articles: Article[] };
+type Options = {
+  query: ArticleListQuery;
+};
+
+export const getArticleList = async ({ query }: Options = { query: {} }) => {
+  const res = await fetch(`/api/articles${getQueryString(query)}`);
+  return (await res.json()) as ArticleListResponseData;
 };
