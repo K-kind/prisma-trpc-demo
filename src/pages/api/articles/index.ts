@@ -5,10 +5,14 @@ import { prisma } from "@/lib/prisma";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { calcOffset } from "@/utils/pagination";
 
+export const ARTICLE_LIST_SORTS = ["createdAt:asc", "createdAt:desc"] as const;
+
 export type ArticleListQuery = {
   page?: string;
   per?: string;
   keyword?: string;
+  /** "createdAt:asc,createdAt:desc" のような形 */
+  sort?: string;
 };
 
 export type ArticleListResponseData = {
@@ -33,9 +37,16 @@ export default async function handler(
         ],
       }
     : undefined;
+  const orderBy = query.sort
+    ? query.sort.map((s) => {
+        const [key, order] = s.split(":");
+        return { [key]: order };
+      })
+    : undefined;
   const [articles, total] = await prisma.$transaction([
     prisma.article.findMany({
       where,
+      orderBy,
       take: query.per,
       skip,
     }),
@@ -47,7 +58,7 @@ export default async function handler(
 const MAX_PER = 100;
 
 const parseQuery = (rawQuery: unknown) => {
-  const defaultQuery = { page: 1, per: 10, keyword: undefined };
+  const defaultQuery = { page: 1, per: 10, keyword: undefined, sort: null };
   if (rawQuery == null || typeof rawQuery !== "object") return defaultQuery;
 
   const query = rawQuery as Record<string, unknown>;
@@ -55,5 +66,10 @@ const parseQuery = (rawQuery: unknown) => {
   const parsedPer = parseNumber(query.per);
   const per = parsedPer && parsedPer <= MAX_PER ? parsedPer : defaultQuery.per;
   const keyword = parseString(query.keyword);
-  return { page, per, keyword };
+  const sort = (parseString(query.sort)
+    ?.split(",")
+    .filter((s) => ARTICLE_LIST_SORTS.includes(s as any)) ?? null) as
+    | (typeof ARTICLE_LIST_SORTS)[number][]
+    | null;
+  return { page, per, keyword, sort };
 };

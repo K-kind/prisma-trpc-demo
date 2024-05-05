@@ -3,13 +3,13 @@ import { respondError } from "@/lib/apiUtils";
 import { prisma } from "@/lib/prisma";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-type Data = {
+export type ArticleResponseData = {
   article: Article | null;
 };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<ArticleResponseData>
 ) {
   if (req.method !== "GET") return respondError(res, "Invalid request", 422);
   if (typeof req.query.id !== "string") {

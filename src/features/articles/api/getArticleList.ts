@@ -1,3 +1,4 @@
+import { convertToArticle } from "@/features/articles/models/article";
 import {
   ArticleListQuery,
   ArticleListResponseData,
@@ -8,7 +9,10 @@ type Options = {
   query: ArticleListQuery;
 };
 
-export const getArticleList = async ({ query }: Options = { query: {} }) => {
+export const getArticleList = async (
+  { query }: Options = { query: {} }
+): Promise<ArticleListResponseData> => {
   const res = await fetch(`/api/articles${getQueryString(query)}`);
-  return (await res.json()) as ArticleListResponseData;
+  const data = await res.json();
+  return { articles: data.articles.map(convertToArticle), total: data.total };
 };
