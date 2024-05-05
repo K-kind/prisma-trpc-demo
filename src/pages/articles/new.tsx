@@ -1,8 +1,8 @@
-import { createArticle } from "@/features/articles/api/createArticle";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+
+import { createArticle } from "@/features/articles/api/createArticle";
 
 export default function ArticleNew() {
   const [title, setTitle] = useState("");

@@ -1,9 +1,10 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+
 import { Article } from "@/features/articles/models/article";
 import { respondError } from "@/lib/apiUtils";
-import { parseNumber, parseString } from "@/utils/parseTypes";
 import { prisma } from "@/lib/prisma";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { calcOffset } from "@/utils/pagination";
+import { parseNumber, parseString } from "@/utils/parseTypes";
 
 export const ARTICLE_LIST_SORTS = ["createdAt:asc", "createdAt:desc"] as const;
 
@@ -22,7 +23,7 @@ export type ArticleListResponseData = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ArticleListResponseData>
+  res: NextApiResponse<ArticleListResponseData>,
 ) {
   if (req.method !== "GET") return respondError(res, "Invalid request", 422);
 

@@ -1,9 +1,10 @@
-import { destroyArticle } from "@/features/articles/api/destroyArticle";
-import { getArticle } from "@/features/articles/api/getArticle";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+
+import { destroyArticle } from "@/features/articles/api/destroyArticle";
+import { getArticle } from "@/features/articles/api/getArticle";
 
 export default function ArticleShow() {
   const router = useRouter();

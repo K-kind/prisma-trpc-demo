@@ -1,5 +1,6 @@
-import { ArticleCreateParams } from "@/features/articles/models/article";
 import { PrismaClient } from "@prisma/client";
+
+import { ArticleCreateParams } from "@/features/articles/models/article";
 
 const prisma = new PrismaClient();
 

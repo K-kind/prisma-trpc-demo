@@ -10,7 +10,7 @@ type Options = {
 };
 
 export const getArticleList = async (
-  { query }: Options = { query: {} }
+  { query }: Options = { query: {} },
 ): Promise<ArticleListResponseData> => {
   const res = await fetch(`/api/articles${getQueryString(query)}`);
   const data = await res.json();

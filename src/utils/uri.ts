@@ -1,6 +1,6 @@
 /** ex. { foo: 'a' } => '?foo=a', {} => '' */
 export const getQueryString = (
-  query: Record<string, string | string[] | undefined>
+  query: Record<string, string | string[] | undefined>,
 ) => {
   const queryObject = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {

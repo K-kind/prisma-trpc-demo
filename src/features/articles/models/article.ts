@@ -7,7 +7,7 @@ export const convertToArticle = (
   article: Omit<Article, "createdAt" | "updatedAt"> & {
     createdAt: string;
     updatedAt: string;
-  }
+  },
 ) => {
   return {
     ...article,

@@ -1,7 +1,8 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+
 import { Article } from "@/features/articles/models/article";
 import { respondError } from "@/lib/apiUtils";
 import { prisma } from "@/lib/prisma";
-import type { NextApiRequest, NextApiResponse } from "next";
 
 export type ArticleResponseData = {
   article: Article | null;
@@ -9,7 +10,7 @@ export type ArticleResponseData = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ArticleResponseData>
+  res: NextApiResponse<ArticleResponseData>,
 ) {
   if (req.method !== "GET") return respondError(res, "Invalid request", 422);
   if (typeof req.query.id !== "string") {

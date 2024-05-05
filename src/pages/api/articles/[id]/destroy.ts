@@ -1,10 +1,11 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+
 import { respondError } from "@/lib/apiUtils";
 import { prisma } from "@/lib/prisma";
-import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "DELETE") {
     return respondError(res, "Invalid request", 422);

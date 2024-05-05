@@ -1,31 +1,32 @@
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { FormEvent, useMemo, useState } from "react";
+
 import { Pagination } from "@/components/Pagination";
 import { getArticleList } from "@/features/articles/api/getArticleList";
 import { ARTICLE_LIST_SORTS } from "@/pages/api/articles";
 import { truncateString } from "@/utils/format";
 import { parseString } from "@/utils/parseTypes";
 import { getQueryString } from "@/utils/uri";
-import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { FormEvent, useMemo, useState } from "react";
 
 export default function ArticleIndex() {
   const router = useRouter();
   const page = useMemo(
     () => parseString(router.query.page) ?? "1",
-    [router.query]
+    [router.query],
   );
   const per = useMemo(
     () => parseString(router.query.per) ?? "10",
-    [router.query]
+    [router.query],
   );
   const keyword = useMemo(
     () => parseString(router.query.keyword) ?? undefined,
-    [router.query]
+    [router.query],
   );
   const sort = useMemo(
     () => parseString(router.query.sort) ?? undefined,
-    [router.query]
+    [router.query],
   );
 
   const query = useQuery({
@@ -50,7 +51,7 @@ export default function ArticleIndex() {
         ...router.query,
         page: "1",
         keyword: keywordState || undefined,
-      })}`
+      })}`,
     );
     setKeywordState("");
   };
@@ -60,7 +61,7 @@ export default function ArticleIndex() {
       `/articles${getQueryString({
         ...router.query,
         page: String(nextPage),
-      })}`
+      })}`,
     );
   };
 
@@ -69,7 +70,7 @@ export default function ArticleIndex() {
       `/articles${getQueryString({
         ...router.query,
         sort: value,
-      })}`
+      })}`,
     );
   };
 
