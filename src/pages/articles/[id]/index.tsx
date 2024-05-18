@@ -2,7 +2,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
-import { destroyArticle } from "@/features/articles/api/destroyArticle";
 import { trpc } from "@/lib/trpc";
 
 export default function ArticleShow() {
@@ -11,9 +10,16 @@ export default function ArticleShow() {
   const query = trpc.article.byId.useQuery({ id }, { enabled: router.isReady });
   const article = useMemo(() => query.data ?? null, [query.data]);
 
+  const destroyArticleMutation = trpc.article.destroy.useMutation();
+
   const onClickDestroy = async () => {
-    await destroyArticle({ id });
-    await router.push("/articles");
+    try {
+      await destroyArticleMutation.mutateAsync({ id });
+      await router.push("/articles");
+    } catch (e) {
+      alert("エラーが発生しました。");
+      console.error(e);
+    }
   };
 
   return (

@@ -108,4 +108,15 @@ export const articleRouter = router({
       });
       return article;
     }),
+  destroy: procedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      await prisma.article.delete({
+        where: { id: input.id },
+      });
+    }),
 });
