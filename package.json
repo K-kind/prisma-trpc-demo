@@ -9,17 +9,18 @@
     "lint": "next lint",
     "format": "prettier '*.{js,ts,tsx,json}|src/**/*.{js,ts,tsx,json}'",
     "fix": "npm run lint -- --fix && npm run format -- --write",
-    "seed": "ts-node -O '{\"module\":\"commonjs\"}' src/prisma/seed.ts"
+    "db:push": "prisma db push",
+    "db:seed": "ts-node -O '{\"module\":\"commonjs\"}' src/prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^5.13.0",
+    "@prisma/client": "^5.14.0",
     "@tanstack/react-query": "^5.29.2",
     "@trpc/client": "^11.0.0-rc.364",
     "@trpc/next": "^11.0.0-rc.364",
     "@trpc/react-query": "^11.0.0-rc.364",
     "@trpc/server": "^11.0.0-rc.364",
     "next": "14.2.1",
-    "prisma": "^5.13.0",
+    "prisma": "^5.14.0",
     "react": "^18",
     "react-dom": "^18",
     "zod": "^3.23.6"
