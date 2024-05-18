@@ -1,10 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
-import { getArticle } from "@/features/articles/api/getArticle";
 import { updateArticle } from "@/features/articles/api/updateArticle";
+import { trpc } from "@/lib/trpc";
 
 export default function ArticleEdit() {
   const [title, setTitle] = useState("");
@@ -12,11 +11,8 @@ export default function ArticleEdit() {
   const router = useRouter();
   const id = useMemo(() => Number(router.query.id), [router.query]);
 
-  const query = useQuery({
-    queryKey: ["articles", id],
-    queryFn: () => getArticle({ id }),
-  });
-  const article = useMemo(() => query.data?.article, [query.data]);
+  const query = trpc.article.byId.useQuery({ id }, { enabled: router.isReady });
+  const article = useMemo(() => query.data ?? null, [query.data]);
 
   useEffect(() => {
     if (article == null) return;

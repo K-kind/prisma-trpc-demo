@@ -38,7 +38,7 @@ export default function ArticleIndex() {
 
   const query = trpc.article.list.useQuery(
     { page, per, keyword, sort },
-    { placeholderData: (prev) => prev },
+    { placeholderData: (prev) => prev, enabled: router.isReady },
   );
 
   const articles = useMemo(() => query.data?.articles, [query.data]);

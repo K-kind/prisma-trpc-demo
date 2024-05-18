@@ -15,6 +15,8 @@ const articleListSelect = {
   updatedAt: true,
 } satisfies Prisma.ArticleSelect;
 
+const articleDetailSelect = articleListSelect satisfies Prisma.ArticleSelect;
+
 const ARTICLE_LIST_DEFAULT_PER = 10;
 const ARTICLE_LIST_MAX_PER = 100;
 
@@ -64,6 +66,15 @@ export const articleRouter = router({
         articles,
         total,
       };
+    }),
+  byId: procedure
+    .input(z.object({ id: z.number().min(1) }))
+    .query(async ({ input }) => {
+      const article = await prisma.article.findFirst({
+        where: { id: input.id },
+        select: articleDetailSelect,
+      });
+      return article;
     }),
   // byId: procedure
   //   .input(

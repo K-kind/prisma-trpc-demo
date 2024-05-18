@@ -1,19 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
 import { destroyArticle } from "@/features/articles/api/destroyArticle";
-import { getArticle } from "@/features/articles/api/getArticle";
+import { trpc } from "@/lib/trpc";
 
 export default function ArticleShow() {
   const router = useRouter();
   const id = useMemo(() => Number(router.query.id), [router.query]);
-  const query = useQuery({
-    queryKey: ["articles", id],
-    queryFn: () => getArticle({ id }),
-  });
-  const article = useMemo(() => query.data?.article, [query.data]);
+  const query = trpc.article.byId.useQuery({ id }, { enabled: router.isReady });
+  const article = useMemo(() => query.data ?? null, [query.data]);
 
   const onClickDestroy = async () => {
     await destroyArticle({ id });
