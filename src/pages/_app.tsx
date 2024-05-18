@@ -1,14 +1,11 @@
 import "@/styles/globals.css";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
 
-const queryClient = new QueryClient();
+import { trpc } from "@/lib/trpc";
 
-export default function App({ Component, pageProps }: AppProps) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
-    </QueryClientProvider>
-  );
+function App({ Component, pageProps }: AppProps) {
+  return <Component {...pageProps} />;
 }
+
+export default trpc.withTRPC(App);

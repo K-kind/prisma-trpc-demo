@@ -1,38 +1,45 @@
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import { Pagination } from "@/components/Pagination";
-import { getArticleList } from "@/features/articles/api/getArticleList";
-import { ARTICLE_LIST_SORTS } from "@/pages/api/articles";
+import { ARTICLE_LIST_SORTS } from "@/features/articles/models/article";
+import { trpc } from "@/lib/trpc";
 import { truncateString } from "@/utils/format";
 import { parseString } from "@/utils/parseTypes";
 import { getQueryString } from "@/utils/uri";
 
+const sortParamDelimiter = ",";
+
 export default function ArticleIndex() {
   const router = useRouter();
   const page = useMemo(
-    () => parseString(router.query.page) ?? "1",
+    () => Number(parseString(router.query.page) ?? "1"),
     [router.query],
   );
   const per = useMemo(
-    () => parseString(router.query.per) ?? "10",
+    () => Number(parseString(router.query.per) ?? "10"),
     [router.query],
   );
   const keyword = useMemo(
     () => parseString(router.query.keyword) ?? undefined,
     [router.query],
   );
-  const sort = useMemo(
-    () => parseString(router.query.sort) ?? undefined,
-    [router.query],
-  );
+  const sort = useMemo(() => {
+    const sortString = parseString(router.query.sort);
+    if (sortString == null) return;
 
-  const query = useQuery({
-    queryKey: ["articles", { page, per, keyword, sort }],
-    queryFn: () => getArticleList({ query: { page, per, keyword, sort } }),
-  });
+    return sortString
+      .split(sortParamDelimiter)
+      .filter((s) =>
+        ARTICLE_LIST_SORTS.includes(s as any),
+      ) as (typeof ARTICLE_LIST_SORTS)[number][];
+  }, [router.query]);
+
+  const query = trpc.article.list.useQuery(
+    { page, per, keyword, sort },
+    { placeholderData: (prev) => prev },
+  );
 
   const articles = useMemo(() => query.data?.articles, [query.data]);
   const total = useMemo(() => query.data?.total, [query.data]);
@@ -44,6 +51,10 @@ export default function ArticleIndex() {
 
   const [keywordState, setKeywordState] = useState("");
 
+  useEffect(() => {
+    keyword && setKeywordState(keyword);
+  }, [keyword]);
+
   const onSubmitSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await router.push(
@@ -53,7 +64,6 @@ export default function ArticleIndex() {
         keyword: keywordState || undefined,
       })}`,
     );
-    setKeywordState("");
   };
 
   const onPaginate = (nextPage: number) => {
@@ -65,11 +75,11 @@ export default function ArticleIndex() {
     );
   };
 
-  const onChangeSort = (value: (typeof ARTICLE_LIST_SORTS)[number]) => {
+  const onChangeSort = (value: (typeof ARTICLE_LIST_SORTS)[number][]) => {
     return router.push(
       `/articles${getQueryString({
         ...router.query,
-        sort: value,
+        sort: value.join(sortParamDelimiter),
       })}`,
     );
   };
@@ -123,7 +133,7 @@ export default function ArticleIndex() {
                         sort?.includes("createdAt:asc") ? "" : "text-blue-600"
                       }
                       disabled={sort?.includes("createdAt:asc")}
-                      onClick={() => onChangeSort("createdAt:asc")}
+                      onClick={() => onChangeSort(["createdAt:asc"])}
                     >
                       ↑
                     </button>
@@ -132,7 +142,7 @@ export default function ArticleIndex() {
                         sort?.includes("createdAt:desc") ? "" : "text-blue-600"
                       }
                       disabled={sort?.includes("createdAt:desc")}
-                      onClick={() => onChangeSort("createdAt:desc")}
+                      onClick={() => onChangeSort(["createdAt:desc"])}
                     >
                       ↓
                     </button>
