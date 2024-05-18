@@ -23,4 +23,9 @@ export type ArticleCreateParams = {
   content: string;
 };
 
+export const MIN_TITLE_LENGTH = 1;
+export const MAX_TITLE_LENGTH = 255;
+export const MIN_CONTENT_LENGTH = 1;
+export const MAX_CONTENT_LENGTH = 10000;
+
 export type ArticleUpdateParams = ArticleCreateParams;

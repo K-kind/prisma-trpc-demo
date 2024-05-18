@@ -2,17 +2,26 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-import { createArticle } from "@/features/articles/api/createArticle";
+import { trpc } from "@/lib/trpc";
 
 export default function ArticleNew() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const router = useRouter();
 
+  const mutation = trpc.article.create.useMutation();
+
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { article } = await createArticle({ params: { title, content } });
-    router.push(`/articles/${article.id}`);
+    if (mutation.isPending) return;
+
+    try {
+      const article = await mutation.mutateAsync({ title, content });
+      router.push(`/articles/${article.id}`);
+    } catch (e) {
+      alert("エラーが発生しました。");
+      console.error(e);
+    }
   };
 
   return (
@@ -49,6 +58,7 @@ export default function ArticleNew() {
           <button
             className="border py-1 px-4 bg-blue-600 text-white"
             type="submit"
+            disabled={mutation.isPending}
           >
             保存
           </button>
