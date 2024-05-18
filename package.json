@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "typecheck": "tsc",
     "lint": "next lint",
     "format": "prettier '*.{js,ts,tsx,json}|src/**/*.{js,ts,tsx,json}'",
     "fix": "npm run lint -- --fix && npm run format -- --write",
