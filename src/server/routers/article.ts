@@ -1,13 +1,8 @@
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-import {
-  ARTICLE_LIST_SORTS,
-  MAX_CONTENT_LENGTH,
-  MAX_TITLE_LENGTH,
-  MIN_CONTENT_LENGTH,
-  MIN_TITLE_LENGTH,
-} from "@/features/articles/models/article";
+import { ARTICLE_LIST_SORTS } from "@/features/articles/models/article";
+import { articleSchema } from "@/features/articles/models/articleSchemas";
 import { prisma } from "@/lib/prisma";
 import { calcOffset } from "@/utils/pagination";
 
@@ -82,23 +77,14 @@ export const articleRouter = router({
       });
       return article;
     }),
-  create: procedure
-    .input(
-      z.object({
-        title: z.string().min(MIN_TITLE_LENGTH).max(MAX_TITLE_LENGTH),
-        content: z.string().min(MIN_CONTENT_LENGTH).max(MAX_CONTENT_LENGTH),
-      }),
-    )
-    .mutation(async ({ input }) => {
-      const article = await prisma.article.create({ data: input });
-      return article;
-    }),
+  create: procedure.input(articleSchema()).mutation(async ({ input }) => {
+    const article = await prisma.article.create({ data: input });
+    return article;
+  }),
   update: procedure
     .input(
-      z.object({
+      articleSchema().extend({
         id: z.number(),
-        title: z.string().min(MIN_TITLE_LENGTH).max(MAX_TITLE_LENGTH),
-        content: z.string().min(MIN_CONTENT_LENGTH).max(MAX_CONTENT_LENGTH),
       }),
     )
     .mutation(async ({ input }) => {
