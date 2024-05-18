@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-import { ArticleCreateParams } from "@/features/articles/models/article";
+import { ArticleCreateInput } from "@/features/articles/models/article";
 
 const prisma = new PrismaClient();
 
@@ -9,7 +9,7 @@ const createArticles = async () => {
     orderBy: [{ id: "desc" }],
   });
   const nextArticleSeq = lastArticle ? lastArticle.id + 1 : 1;
-  const articleData: ArticleCreateParams[] = [...Array(50)].map((_, index) => ({
+  const articleData: ArticleCreateInput[] = [...Array(50)].map((_, index) => ({
     title: `テスト記事${index + nextArticleSeq}`,
     content: `これは${
       index + nextArticleSeq

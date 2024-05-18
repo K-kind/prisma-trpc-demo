@@ -74,7 +74,7 @@ export const articleRouter = router({
       };
     }),
   byId: procedure
-    .input(z.object({ id: z.number().min(1) }))
+    .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
       const article = await prisma.article.findFirst({
         where: { id: input.id },
@@ -91,6 +91,21 @@ export const articleRouter = router({
     )
     .mutation(async ({ input }) => {
       const article = await prisma.article.create({ data: input });
+      return article;
+    }),
+  update: procedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().min(MIN_TITLE_LENGTH).max(MAX_TITLE_LENGTH),
+        content: z.string().min(MIN_CONTENT_LENGTH).max(MAX_CONTENT_LENGTH),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const article = await prisma.article.update({
+        where: { id: input.id },
+        data: input,
+      });
       return article;
     }),
 });

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
-import { updateArticle } from "@/features/articles/api/updateArticle";
 import { trpc } from "@/lib/trpc";
 
 export default function ArticleEdit() {
@@ -21,10 +20,19 @@ export default function ArticleEdit() {
     setContent(article.content);
   }, [article]);
 
+  const mutation = trpc.article.update.useMutation();
+
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await updateArticle({ id, params: { title, content } });
-    await router.push(`/articles/${id}`);
+    if (mutation.isPending) return;
+
+    try {
+      await mutation.mutateAsync({ id, title, content });
+      await router.push(`/articles/${id}`);
+    } catch (e) {
+      alert("エラーが発生しました。");
+      console.error(e);
+    }
   };
 
   return (
@@ -61,6 +69,7 @@ export default function ArticleEdit() {
           <button
             className="border py-1 px-4 bg-blue-600 text-white"
             type="submit"
+            disabled={mutation.isPending}
           >
             保存
           </button>
