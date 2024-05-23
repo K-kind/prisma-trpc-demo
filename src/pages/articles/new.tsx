@@ -1,22 +1,20 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
 
+import { ArticleForm } from "@/features/articles/components/ArticleForm";
+import { ArticleCreateInput } from "@/features/articles/models/article";
 import { trpc } from "@/lib/trpc";
 
 export default function ArticleNew() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
   const router = useRouter();
 
   const mutation = trpc.article.create.useMutation();
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = async (input: ArticleCreateInput) => {
     if (mutation.isPending) return;
 
     try {
-      const article = await mutation.mutateAsync({ title, content });
+      const article = await mutation.mutateAsync(input);
       router.push(`/articles/${article.id}`);
     } catch (e) {
       alert("エラーが発生しました。");
@@ -28,42 +26,11 @@ export default function ArticleNew() {
     <div className="p-6 max-w-screen-sm mx-auto">
       <h1 className="text-xl font-bold">記事作成</h1>
 
-      <form className="mt-4 max-w-96" onSubmit={onSubmit}>
-        <div>
-          <label className="block" htmlFor="title">
-            タイトル
-          </label>
-          <input
-            value={title}
-            className="border mt-1 w-full"
-            type="text"
-            id="title"
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-
-        <div className="mt-2">
-          <label className="block" htmlFor="content">
-            コンテンツ
-          </label>
-          <textarea
-            value={content}
-            className="border mt-1 w-full"
-            id="content"
-            onChange={(e) => setContent(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <button
-            className="border py-1 px-4 bg-blue-600 text-white"
-            type="submit"
-            disabled={mutation.isPending}
-          >
-            保存
-          </button>
-        </div>
-      </form>
+      <ArticleForm
+        type="create"
+        isLoading={mutation.isPending}
+        onSubmit={onSubmit}
+      />
 
       <div className="mt-4">
         <Link href="/articles">
